@@ -127,10 +127,12 @@ r <- rast(here(chelsa, "1981-2010", "CHELSA_tas_1981-2010_ant.tif"))
 
 # Create spatial prediction for each month (i.e., layer)
 # ld = T means it will return the raster the layer in addition to writing to disk
+# Hydrogren
 myr <- spat_pred(model = h2m, gas = "H2", clim_ras = r, 
                  msk = coast, time_period = "1981-2010", ld = T, 
                  pth = here(dirname(here()), "data"))
 
+# Carbon monoxide
 spat_pred(model = com, gas = "CO", clim_ras = r, 
           msk = coast, time_period = "1981-2010", ld = F, 
           pth = here(dirname(here()), "data"))
