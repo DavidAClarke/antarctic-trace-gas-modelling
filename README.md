@@ -2,7 +2,7 @@
 Modelling and predicting rates of Antarctic trace gas oxidation across space (i.e., across the Antarctic ice-free areas).
 
 ## Climate data
-Temperature data for use in the spatial predictions was obtained from [CHELSA v2.1](https://chelsa-climate.org/downloads/). There are four time periods, where all but the first (current climate) are associated with outputs from five global climate models (GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, UKESM1-0-LL) and three emmissions scenarios (ssp126, ssp370, ssp585). Functions for reading and manipulating the temperature data requires the following folder structure (though replace "model n" with the model name, e.g. GFDL-ESM4):
+Temperature (tas) data for use in the spatial predictions was obtained from [CHELSA v2.1](https://chelsa-climate.org/downloads/). There are four time periods, where all but the first (current climate) are associated with outputs from five global climate models (GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, UKESM1-0-LL) and three emmissions scenarios (ssp126, ssp370, ssp585). Functions for reading and manipulating the temperature data requires the following folder structure (though replace "model n" with the model name, e.g. GFDL-ESM4):
 
 |--- chelsa  
 &nbsp;&nbsp;&nbsp;&nbsp;|--- 1981-2010  
