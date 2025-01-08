@@ -122,6 +122,7 @@ coast <- st_read(here(shared_path, "environmental", "coastline",
   
   st_transform("ESRI:102020")
 
+## Current climate
 # Read Antarctic temperature data (text example)
 r <- rast(here(chelsa, "1981-2010", "CHELSA_tas_1981-2010_ant.tif"))
 
@@ -136,3 +137,6 @@ myr <- spat_pred(model = h2m, gas = "H2", clim_ras = r,
 spat_pred(model = com, gas = "CO", clim_ras = r, 
           msk = coast, time_period = "1981-2010", ld = F, 
           pth = here(dirname(here()), "data"))
+
+## Future climates
+
