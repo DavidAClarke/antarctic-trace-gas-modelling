@@ -7,15 +7,15 @@ Temperature data for use in the spatial predictions was obtained from [CHELSA v2
 |--- chelsa  
 &nbsp;&nbsp;&nbsp;&nbsp;|--- 1981-2010  
 &nbsp;&nbsp;&nbsp;&nbsp;|--- 2011-2040  
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--- model 1  
-      |--- ssp126  
-      |--- ssp370  
-      |--- ssp585  
-    .  
-    .  
-    .  
-    |--- model 5  
-  .  
-  .  
-  .  
-  |--- 2071-2100
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--- model 1  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--- ssp126  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--- ssp370  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--- ssp585  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--- model 5  
+&nbsp;&nbsp;&nbsp;&nbsp;.  
+&nbsp;&nbsp;&nbsp;&nbsp;.  
+&nbsp;&nbsp;&nbsp;&nbsp;.  
+&nbsp;&nbsp;&nbsp;&nbsp;|--- 2071-2100
