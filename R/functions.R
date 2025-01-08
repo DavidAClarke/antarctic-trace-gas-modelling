@@ -107,7 +107,7 @@ model_pred <- function(dat, gas, model){
 }
 
 ## Gas rate spatial prediction
-spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth){
+spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth, fname){
   
   r <- rast()
   
@@ -125,11 +125,11 @@ spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth){
     
   }
   
-  writeRaster(r, here(pth, paste0(gas,"_tas_",time_period,".tif")))
+  writeRaster(r, here(pth, fname))
   
   if(ld == T){
     
-    r <- rast(here(pth, paste0(gas,"_tas_",time_period,".tif")))
+    r <- rast(here(pth, fname))
     return(r) 
     
   }
