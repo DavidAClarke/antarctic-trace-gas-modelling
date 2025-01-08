@@ -6,7 +6,7 @@ Temperature data for use in the spatial predictions was obtained from [CHELSA v2
 
 |--- chelsa  
 &nbsp;&nbsp;&nbsp;&nbsp;|--- 1981-2010  
-  |--- 2011-2040  
+  &nbsp;&nbsp;&nbsp;&nbsp;|--- 2011-2040  
     |--- model 1  
       |--- ssp126  
       |--- ssp370  
