@@ -54,7 +54,7 @@ gas_data <- list()
 for(g in gases){
   
   # Read in excel sheet
-  mydata <- read_excel(here("data", "Antarctic temps gas rates final.xlsx"), 
+  mydata <- read_excel(here(dirname(here()),"data", "Antarctic temps gas rates final.xlsx"), 
                        sheet = g, skip = 1) %>%
     
     # Manipulate the data into the proper format  
@@ -125,7 +125,12 @@ coast <- st_read(here(shared_path, "environmental", "coastline",
 # Read Antarctic temperature data (text example)
 r <- rast(here(chelsa, "1981-2010", "CHELSA_tas_1981-2010_ant.tif"))
 
-# Create spatial prediction
+# Create spatial prediction for each month (i.e., layer)
 # ld = T means it will return the raster the layer in addition to writing to disk
-myr <- spat_pred(model = h2m, gas = "H2", ras = r, 
-                 msk = coast, time_period = "1981-2010", ld = T)
+myr <- spat_pred(model = h2m, gas = "H2", clim_ras = r, 
+                 msk = coast, time_period = "1981-2010", ld = T, 
+                 pth = here(dirname(here()), "data"))
+
+spat_pred(model = com, gas = "CO", clim_ras = r, 
+          msk = coast, time_period = "1981-2010", ld = F, 
+          pth = here(dirname(here()), "data"))
