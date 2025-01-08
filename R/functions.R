@@ -107,14 +107,14 @@ model_pred <- function(dat, gas, model){
 }
 
 ## Gas rate spatial prediction
-spat_pred <- function(model, gas, ras, msk, time_period, ld = F){
+spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth){
   
   r <- rast()
   
-  for(i in 1:nlyr(ras)){
+  for(i in 1:nlyr(clim_ras)){
     
     print(paste("Working on raster layer ", i))
-    r1 <- ras[[i]]
+    r1 <- clim_ras[[i]]
     names(r1) <- "temp"
     r1 <- mask(r1, msk)
     clim_df <- terra::as.data.frame(r1, xy = TRUE)
@@ -129,7 +129,7 @@ spat_pred <- function(model, gas, ras, msk, time_period, ld = F){
   
   if(ld == T){
     
-    r <- rast(here("data", paste0(gas,"_tas_",time_period,".tif")))
+    r <- rast(here(pth, paste0(gas,"_tas_",time_period,".tif")))
     return(r) 
     
   }
