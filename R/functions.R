@@ -125,7 +125,7 @@ spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth){
     
   }
   
-  writeRaster(r, here("data", paste0(gas,"_tas_",time_period,".tif")))
+  writeRaster(r, here(pth, paste0(gas,"_tas_",time_period,".tif")))
   
   if(ld == T){
     
