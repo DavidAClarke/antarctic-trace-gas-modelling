@@ -122,6 +122,12 @@ coast <- st_read(here(shared_path, "environmental", "coastline",
   
   st_transform("ESRI:102020")
 
+# Load ACBR shapefile
+acbr <- st_read(here(shared_path, "biodiversity", "acbr", "ACBRs_v2_2016", 
+                     "ACBRs_v2_2016.shp"), quiet = T) %>%
+  
+  st_transform("ESRI:102020")
+
 ## Current climate
 # Read Antarctic temperature data (text example)
 r <- rast(here(chelsa, "1981-2010", "CHELSA_tas_1981-2010_ant.tif"))
@@ -131,12 +137,50 @@ r <- rast(here(chelsa, "1981-2010", "CHELSA_tas_1981-2010_ant.tif"))
 # Hydrogren
 myr <- spat_pred(model = h2m, gas = "H2", clim_ras = r, 
                  msk = coast, time_period = "1981-2010", ld = T, 
-                 pth = here(dirname(here()), "data"))
+                 pth = here(dirname(here()), "data"),
+                 fname = "H2_1981-2010.tif")
 
 # Carbon monoxide
 spat_pred(model = com, gas = "CO", clim_ras = r, 
           msk = coast, time_period = "1981-2010", ld = F, 
-          pth = here(dirname(here()), "data"))
+          pth = here(dirname(here()), "data"),
+          fname = "CO_1981-2010.tif")
 
 ## Future climates
+# Hydrogren
+for(t in time_periods[-1]){
+  
+  t_files <- list.files(here(chelsa, t), pattern = "tif", full.names = T)
+  t_names <- list.files(here(chelsa, t), pattern = "tif", full.names = F)
+  
+  for(i in seq_along(t_files)){
+    
+    r <- rast(t_files[i])
+    n <- gsub("CHELSA_mean_tas", "H2", t_names[i])
+    
+    spat_pred(model = h2m, gas = "H2", clim_ras = r, 
+              msk = coast, time_period = t, ld = F, 
+              pth = here(dirname(here()), "data"),
+              fname = n)
+    
+  }
+}
 
+# Carbon monoxide
+for(t in time_periods[-1]){
+  
+  t_files <- list.files(here(chelsa, t), pattern = "tif", full.names = T)
+  t_names <- list.files(here(chelsa, t), pattern = "tif", full.names = F)
+  
+  for(i in seq_along(t_files)){
+    
+    r <- rast(t_files[i])
+    n <- gsub("CHELSA_mean_tas", "CO", t_names[i])
+    
+    spat_pred(model = com, gas = "CO", clim_ras = r, 
+              msk = coast, time_period = t, ld = F, 
+              pth = here(dirname(here()), "data"),
+              fname = n)
+    
+  }
+}
