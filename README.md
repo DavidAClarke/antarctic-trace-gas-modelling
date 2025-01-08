@@ -5,7 +5,7 @@ Modelling and predicting rates of Antarctic trace gas oxidation across space (i.
 Temperature data for use in the spatial predictions was obtained from [CHELSA v2.1](https://chelsa-climate.org/downloads/). There are four time periods, where all but the first (current climate) are associated with outputs from five global climate models and three emmissions scenarios. Functions for reading and manipulating the temperature data requires the following folder structure:
 
 |--- chelsa  
-  |--- 1981-2010  
+   |--- 1981-2010  
   |--- 2011-2040  
     |--- model 1  
       |--- ssp126  
