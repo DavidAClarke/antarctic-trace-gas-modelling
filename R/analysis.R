@@ -184,3 +184,6 @@ for(t in time_periods[-1]){
     
   }
 }
+
+# Carbon monoxide
+fut_spat_pred(time_periods[-1], "CO", chelsa, com)
