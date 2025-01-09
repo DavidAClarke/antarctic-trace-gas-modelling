@@ -114,12 +114,15 @@ spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth, fname
   for(i in 1:nlyr(clim_ras)){
     
     print(paste("Working on raster layer ", i))
+    
     r1 <- clim_ras[[i]]
     names(r1) <- "temp"
     r1 <- mask(r1, msk)
+    
     clim_df <- terra::as.data.frame(r1, xy = TRUE)
     clim_df$rates <- predict(model, newdata = clim_df, type = "response")
     r2 <- terra::rast(clim_df[,c('x','y','rates')], type = 'xyz', crs = crs("ESRI:102020"))
+    
     names(r2) <- paste0(gas,"_",i)
     r <- c(r,r2)
     
@@ -134,4 +137,26 @@ spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth, fname
     
   }
   
+}
+
+## Future gas rate spatial prediction
+fut_spat_pred <- function(time_periods, gas, data_path, model){
+  
+  for(t in time_periods){
+    
+    t_files <- list.files(here(data_path, t), pattern = "tif", full.names = T)
+    t_names <- list.files(here(data_path, t), pattern = "tif", full.names = F)
+    
+    for(i in seq_along(t_files)){
+      
+      r <- rast(t_files[i])
+      n <- gsub("CHELSA_mean_tas", gas, t_names[i])
+      
+      spat_pred(model = model, gas = gas, clim_ras = r, 
+                msk = coast, time_period = t, ld = F, 
+                pth = here(dirname(here()), "data"),
+                fname = n)
+      
+    }
+   }
 }
