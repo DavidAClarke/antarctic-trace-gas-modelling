@@ -98,6 +98,8 @@ summary(com)
 
 # Plot model
 model_pred(gas_data[["CO"]], "CO", com)
+# Alternatively, use marginaleffects::plot_predictions()
+#plot_predictions(h2m, condition = "temp", points = 1, vcov = T, re.form = NA)
 
 # Assess model
 simr <- simulateResiduals(com)
