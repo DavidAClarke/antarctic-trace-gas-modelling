@@ -211,23 +211,67 @@ r2 <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
 pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = "H2_1981-2010")
 pred_maps(r2, comb = T, fun = mean, gas = "CO", sve = T, fname = "CO_1981-2010")
 
-## Boxplots - examples
-vals <- c()
-mnths <- c()
+h2_preds <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*H2*acbr*"), full.names = T)
+h2_names <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*H2*acbr*"), full.names = F)
 
-for(i in 1:nlyr(r2)){
+co_preds <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*CO*acbr*"), full.names = T)
+co_names <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*CO*acbr*"), full.names = F)
+
+for(h in seq_along(h2_preds)){
   
-  vals <- c(vals, values(r2[[i]]))
-  mnths <- c(mnths, rep(month.name[i], length(values(r2[[i]]))))
-            
+  fname <- gsub("_ant_acbr.tif", "", h2_names[h])
+  
+  r <- rast(h2_preds[h])
+  
+  pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = fname, ret = F)
+  
 }
 
-df <- data.frame(vals = vals, mnths = factor(mnths, levels = month.name[1:12]))
+## Boxplots - examples
 
-ggplot(df, aes(x = mnths, y = vals)) +
-  geom_boxplot() +
-  theme_bw() +
-  theme(panel.grid = element_blank()) +
-  xlab("Month") +
-  ylab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1})))
+fig_list <- list()
+
+for(t in time_periods[-1]){
   
+  ind <- which(time_periods == t)
+
+  co_t <- co_preds[str_detect(co_preds, t)]
+  
+  vals <- c()
+  mnths <- c()
+  scen <- c()
+  
+  for(h in seq_along(co_t)){
+    
+    r <- rast(co_t[h])
+    
+    for(i in 1:nlyr(r)){
+      
+      vals <- c(vals, values(r[[i]], na.rm = T))
+      mnths <- c(mnths, rep(month.name[i], length(values(r[[i]], na.rm = T))))
+      scen <- c(scen, rep(scenarios[h], length(values(r[[i]], na.rm = T))))
+                
+      }
+    }
+  
+    df <- data.frame(vals = vals, 
+                     mnths = factor(mnths, levels = month.name[1:12]),
+                     scenario = factor(scen, levels = scenarios))
+  
+    
+    fig_list[[ind]] <- ggplot(df, aes(x = mnths, y = vals, fill = scenario)) +
+                        geom_boxplot() +
+                        theme_bw() +
+                        theme(panel.grid = element_blank()) +
+                        xlab("Month") +
+                        ylab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1}))) +
+                        scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
+                          name = "Emission\nscenario") +
+      ggtitle(t)
+}
+
+gg <- ggpubr::ggarrange(fig_list[[2]], fig_list[[3]], fig_list[[4]], 
+                        nrow = 3, ncol = 1, common.legend = T)
+
+ggsave(here(dirname(here()), "figures", "CO_boxes.pdf"), gg, device = "pdf", 
+       units = "cm", width = 25, height = 20)
