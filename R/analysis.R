@@ -211,14 +211,23 @@ r2 <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
 pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = "H2_1981-2010")
 pred_maps(r2, comb = T, fun = mean, gas = "CO", sve = T, fname = "CO_1981-2010")
 
-## Boxplots
+## Boxplots - examples
 vals <- c()
 mnths <- c()
-for(i in 1:nlyr(r)){
+
+for(i in 1:nlyr(r2)){
   
-  vals <- c(vals, values(r[[i]]))
-  mnths <- c(mnths, rep(i, length(values(r[[i]]))))
+  vals <- c(vals, values(r2[[i]]))
+  mnths <- c(mnths, rep(month.name[i], length(values(r2[[i]]))))
             
 }
-df <- data.frame(vals = vals, mnths = as.factor(mnths))
-boxplot(vals ~ mnths, data = df)
+
+df <- data.frame(vals = vals, mnths = factor(mnths, levels = month.name[1:12]))
+
+ggplot(df, aes(x = mnths, y = vals)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(panel.grid = element_blank()) +
+  xlab("Month") +
+  ylab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1})))
+  
