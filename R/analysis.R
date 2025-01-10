@@ -7,7 +7,7 @@
 
 ## Load required libraries
 pkgs <- c("tidyverse", "sf", "terra", "here", "readxl", "glmmTMB", "DHARMa", 
-          "summarytools", "tidyterra", "performance")
+          "summarytools", "tidyterra", "performance", "tidyterra")
 lapply(pkgs, require, character.only = T)
 
 ## Setup file paths
@@ -140,13 +140,13 @@ r <- rast(here(chelsa, "1981-2010", "CHELSA_tas_1981-2010_ant.tif"))
 myr <- spat_pred(model = h2m, gas = "H2", clim_ras = r, 
                  msk = coast, time_period = "1981-2010", ld = T, 
                  pth = here(dirname(here()), "data"),
-                 fname = "H2_1981-2010.tif")
+                 fname = "H2_1981-2010_ant.tif")
 
 # Carbon monoxide
 spat_pred(model = com, gas = "CO", clim_ras = r, 
           msk = coast, time_period = "1981-2010", ld = F, 
           pth = here(dirname(here()), "data"),
-          fname = "CO_1981-2010.tif")
+          fname = "CO_1981-2010_ant.tif")
 
 ## Future climates
 # Hydrogren
@@ -187,5 +187,38 @@ for(t in time_periods[-1]){
   }
 }
 
-# Carbon monoxide
-fut_spat_pred(time_periods[-1], "CO", chelsa, com)
+# Carbon monoxide - TO TEST
+#fut_spat_pred(time_periods[-1], "CO", chelsa, com)
+
+## Mask predictions to ACBR layer
+gas_preds <- list.files(here(dirname(here()), "data"), pattern = "tif", full.names = T)
+gas_preds_nm <- list.files(here(dirname(here()), "data"), pattern = "tif", full.names = F)
+gas_preds_nm <- gsub(".tif", "_acbr.tif", gas_preds_nm)
+
+for(i in seq_along(gas_preds)){
+  
+  r <- rast(gas_preds[i])
+  r <- mask(r, acbr)
+  writeRaster(r, here(dirname(here()), "data", gas_preds_nm[i]), overwrite = T)
+  
+}
+
+## Step 4: Making figures----
+## Maps - first make a map of the mean of the 12 months
+r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
+r2 <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
+
+pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = "H2_1981-2010")
+pred_maps(r2, comb = T, fun = mean, gas = "CO", sve = T, fname = "CO_1981-2010")
+
+## Boxplots
+vals <- c()
+mnths <- c()
+for(i in 1:nlyr(r)){
+  
+  vals <- c(vals, values(r[[i]]))
+  mnths <- c(mnths, rep(i, length(values(r[[i]]))))
+            
+}
+df <- data.frame(vals = vals, mnths = as.factor(mnths))
+boxplot(vals ~ mnths, data = df)
