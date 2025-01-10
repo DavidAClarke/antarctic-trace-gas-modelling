@@ -163,11 +163,11 @@ fut_spat_pred <- function(time_periods, gas, data_path, model, ovr = F){
 }
 
 ## Make maps of gas predictions
-pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL){
+pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL, ret = F){
   
   if(comb == T){
+    
   r <- app(pred_ras, fun)
-  }
   
   g <- ggplot() +
     geom_sf(data = coast, fill = "#36454F") +
@@ -177,22 +177,56 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
                              "inches"))
   
   if(gas == "H2"){
-  g <- g + scale_fill_whitebox_c(palette = "muted", 
-                              name = expression(nmol ~ H[2] ~ hr^{-1} ~ g^{-1}),
-                              labels = scales::label_number())
+    g <- g + scale_fill_whitebox_c(palette = "muted", 
+                                   name = expression(nmol ~ H[2] ~ hr^{-1} ~ g^{-1}),
+                                   labels = scales::label_number())
   } else
-  
-  if(gas == "CO"){
-  g <- g + scale_fill_whitebox_c(palette = "muted", 
-                              name = expression(nmol ~ CO ~ hr^{-1} ~ g^{-1}),
-                              labels = scales::label_number())
-  }
+    
+    if(gas == "CO"){
+      g <- g + scale_fill_whitebox_c(palette = "muted", 
+                                     name = expression(nmol ~ CO ~ hr^{-1} ~ g^{-1}),
+                                     labels = scales::label_number())
+    }
   
   if(sve == T){
-  ggsave(here(dirname(here()), "figures", paste0(fname, ".svg")), g, device = "svg", 
-         units = "cm", width = 15, height = 10)
+    ggsave(here(dirname(here()), "figures", paste0(fname, ".svg")), g, device = "svg", 
+           units = "cm", width = 15, height = 10)
+   }
   }
   
-  return(g)
+  if(comb == F){
+    
+    for(i in 1:nlyr(r)){
+      
+      g <- ggplot() +
+        geom_sf(data = coast, fill = "#36454F") +
+        geom_spatraster(data =  r[[i]]) +
+        theme_bw() +
+        theme(plot.margin = unit(c(0, 0, 0, 0), 
+                                 "inches"))
+      
+      if(gas == "H2"){
+        g <- g + scale_fill_whitebox_c(palette = "muted", 
+                                       name = expression(nmol ~ H[2] ~ hr^{-1} ~ g^{-1}),
+                                       labels = scales::label_number())
+      } else
+        
+        if(gas == "CO"){
+          g <- g + scale_fill_whitebox_c(palette = "muted", 
+                                         name = expression(nmol ~ CO ~ hr^{-1} ~ g^{-1}),
+                                         labels = scales::label_number())
+        }
+      
+      if(sve == T){
+        ggsave(here(dirname(here()), "figures", paste0(fname,"_",i,".svg")), g, device = "svg", 
+               units = "cm", width = 15, height = 10)
+      }
+    }
+  }
+  
+  if(ret == T){
+    return(g)
+  }
+  
   
 }
