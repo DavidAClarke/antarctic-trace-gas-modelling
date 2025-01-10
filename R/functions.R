@@ -107,7 +107,8 @@ model_pred <- function(dat, gas, model){
 }
 
 ## Gas rate spatial prediction
-spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth, fname){
+spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, 
+                      pth, fname, ovr = F){
   
   r <- rast()
   
@@ -128,7 +129,7 @@ spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth, fname
     
   }
   
-  writeRaster(r, here(pth, fname))
+  writeRaster(r, here(pth, fname), overwrite = ovr)
   
   if(ld == T){
     
@@ -140,7 +141,7 @@ spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, pth, fname
 }
 
 ## Future gas rate spatial prediction
-fut_spat_pred <- function(time_periods, gas, data_path, model){
+fut_spat_pred <- function(time_periods, gas, data_path, model, ovr = F){
   
   for(t in time_periods){
     
@@ -159,4 +160,39 @@ fut_spat_pred <- function(time_periods, gas, data_path, model){
       
     }
    }
+}
+
+## Make maps of gas predictions
+pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL){
+  
+  if(comb == T){
+  r <- app(pred_ras, fun)
+  }
+  
+  g <- ggplot() +
+    geom_sf(data = coast, fill = "#36454F") +
+    geom_spatraster(data =  r) +
+    theme_bw() +
+    theme(plot.margin = unit(c(0, 0, 0, 0), 
+                             "inches"))
+  
+  if(gas == "H2"){
+  g <- g + scale_fill_whitebox_c(palette = "muted", 
+                              name = expression(nmol ~ H[2] ~ hr^{-1} ~ g^{-1}),
+                              labels = scales::label_number())
+  } else
+  
+  if(gas == "CO"){
+  g <- g + scale_fill_whitebox_c(palette = "muted", 
+                              name = expression(nmol ~ CO ~ hr^{-1} ~ g^{-1}),
+                              labels = scales::label_number())
+  }
+  
+  if(sve == T){
+  ggsave(here(dirname(here()), "figures", paste0(fname, ".svg")), g, device = "svg", 
+         units = "cm", width = 15, height = 10)
+  }
+  
+  return(g)
+  
 }
