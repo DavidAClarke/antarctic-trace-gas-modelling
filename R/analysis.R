@@ -230,6 +230,16 @@ for(h in seq_along(h2_preds)){
   
 }
 
+for(h in seq_along(co_preds)){
+  
+  fname <- gsub("_ant_acbr.tif", "", co_names[h])
+  
+  r <- rast(co_preds[h])
+  
+  pred_maps(r, comb = T, fun = mean, gas = "CO", sve = T, fname = fname, ret = F)
+  
+}
+
 ## Boxplots - examples
 
 fig_list <- list()
