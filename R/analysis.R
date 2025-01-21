@@ -263,7 +263,7 @@ for(t in time_periods[-1]){
                         geom_boxplot() +
                         theme_bw() +
                         theme(panel.grid = element_blank()) +
-                        xlab("Month") +
+                        xlab(paste("Month","(",t,")")) +
                         ylab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1}))) +
                         scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
                           name = "Emission\nscenario") +
