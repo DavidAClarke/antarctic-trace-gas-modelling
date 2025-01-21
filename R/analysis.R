@@ -83,6 +83,7 @@ for(g in gases){
 h2m <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"), 
                ziformula = ~ poly(temp,2), data = gas_data[["H2"]])
 summary(h2m)
+confint(h2m)
 
 # Plot model
 model_pred(gas_data[["H2"]], "H2", h2m)
@@ -95,6 +96,7 @@ plot(simr)
 com <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"), 
                ziformula = ~ poly(temp,2), data = gas_data[["CO"]])
 summary(com)
+confint(com)
 
 # Plot model
 model_pred(gas_data[["CO"]], "CO", com)
@@ -109,6 +111,7 @@ plot(simr)
 ch4m <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"), 
                ziformula = ~ poly(temp,2), data = gas_data[["CH4"]])
 summary(ch4m)
+confint(ch4)
 
 # Plot model
 model_pred(gas_data[["CH4"]], "CH4", ch4m)
