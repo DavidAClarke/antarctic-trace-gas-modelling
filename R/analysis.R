@@ -206,7 +206,7 @@ for(i in seq_along(gas_preds)){
 ## Step 4: Making figures----
 ## Maps - first make a map of the mean of the 12 months
 r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
-r2 <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
+r2 <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
 
 pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = "H2_1981-2010")
 pred_maps(r2, comb = T, fun = mean, gas = "CO", sve = T, fname = "CO_1981-2010")
