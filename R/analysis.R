@@ -7,7 +7,7 @@
 
 ## Load required libraries
 pkgs <- c("tidyverse", "sf", "terra", "here", "readxl", "glmmTMB", "DHARMa", 
-          "summarytools", "tidyterra", "performance", "tidyterra")
+          "tidyterra", "performance", "tidyterra")
 lapply(pkgs, require, character.only = T)
 
 ## Setup file paths
