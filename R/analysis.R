@@ -6,7 +6,7 @@
 ################################################################################
 
 ## Load required libraries
-pkgs <- c("tidyverse", "sf", "terra", "here", "readxl", "glmmTMB", "DHARMa", 
+pkgs <- c("dplyr","ggplot2", "stringr", "sf", "terra", "here", "readxl", "glmmTMB", "DHARMa", 
           "tidyterra", "performance", "tidyterra")
 lapply(pkgs, require, character.only = T)
 
@@ -251,15 +251,15 @@ for(t in time_periods[-1]){
   
   ind <- which(time_periods == t)
 
-  co_t <- co_preds[str_detect(co_preds, t)]
+  h2_t <- h2_preds[str_detect(h2_preds, t)]
   
   vals <- c()
   mnths <- c()
   scen <- c()
   
-  for(h in seq_along(co_t)){
+  for(h in seq_along(h2_t)){
     
-    r <- rast(co_t[h])
+    r <- rast(h2_t[h])
     
     for(i in 1:nlyr(r)){
       
@@ -280,7 +280,7 @@ for(t in time_periods[-1]){
                         theme_bw() +
                         theme(panel.grid = element_blank()) +
                         xlab("Month") +
-                        ylab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1}))) +
+                        ylab(expression(Rate ~ (nmol ~ H[2] ~ hr^{-1} ~ g^{-1}))) +
                         scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
                           name = "Emission\nscenario") +
       ggtitle(t)
@@ -289,5 +289,5 @@ for(t in time_periods[-1]){
 gg <- ggpubr::ggarrange(fig_list[[2]], fig_list[[3]], fig_list[[4]], 
                         nrow = 3, ncol = 1, common.legend = T)
 
-ggsave(here(dirname(here()), "figures", "CO_boxes.pdf"), gg, device = "pdf", 
+ggsave(here(dirname(here()), "figures", "H2_boxes.pdf"), gg, device = "pdf", 
        units = "cm", width = 25, height = 20)
