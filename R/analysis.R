@@ -6,8 +6,8 @@
 ################################################################################
 
 ## Load required libraries
-pkgs <- c("dplyr","ggplot2", "stringr", "sf", "terra", "here", "readxl", "glmmTMB", "DHARMa", 
-          "tidyterra", "performance", "tidyterra")
+pkgs <- c("dplyr","ggplot2", "stringr", "sf", "terra", "here", "readxl", 
+          "glmmTMB", "DHARMa", "tidyterra", "tidyterra")
 lapply(pkgs, require, character.only = T)
 
 ## Setup file paths
