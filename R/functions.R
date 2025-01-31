@@ -233,7 +233,7 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
 ## Boxplots containing future climate gas predictions----
 fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path = NULL, img_type = "pdf"){
   
-  preds <- list.files(here(pred_path), pattern = glob2rx(paste0("*",gas,"*acbr*")), full.names = T)
+  preds <- list.files(pred_path, pattern = glob2rx(paste0("*",gas,"*acbr*")), full.names = T)
   
   fig_list <- list()
   
