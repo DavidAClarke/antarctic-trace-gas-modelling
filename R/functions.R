@@ -5,7 +5,7 @@
 ## Email: david_anthony_clarke@hotmail.com
 ################################################################################
 
-## Prepare global climate data for Antarctic
+## Prepare global climate data for Antarctic----
 ant_prepare <- function(time_period, models=NULL, scenarios, my_ext, data_path){
   
   if(time_period == "1981-2010"){
@@ -52,7 +52,7 @@ ant_prepare <- function(time_period, models=NULL, scenarios, my_ext, data_path){
   }
 }
 
-## Combine climate models for each time period
+## Combine climate models for each time period----
 clim_combine <- function(time_period, models, scenarios, data_path){
   
   for(t in time_period){
@@ -78,7 +78,7 @@ clim_combine <- function(time_period, models, scenarios, data_path){
   }
 }
 
-## Gas model prediction and figure
+## Gas model prediction and figure----
 model_pred <- function(dat, gas, model){
   
   xweight <- seq(min(dat$temp), max(dat$temp), 1) 
@@ -106,7 +106,7 @@ model_pred <- function(dat, gas, model){
   return(g)
 }
 
-## Gas rate spatial prediction
+## Gas rate spatial prediction----
 spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F, 
                       pth, fname, ovr = F){
   
@@ -140,7 +140,7 @@ spat_pred <- function(model, gas, clim_ras, msk, time_period, ld = F,
   
 }
 
-## Future gas rate spatial prediction
+## Future gas rate spatial prediction----
 fut_spat_pred <- function(time_periods, gas, data_path, model, ovr = F){
   
   for(t in time_periods){
@@ -162,7 +162,7 @@ fut_spat_pred <- function(time_periods, gas, data_path, model, ovr = F){
    }
 }
 
-## Make maps of gas predictions
+## Make maps of gas predictions----
 pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL, ret = F){
   
   if(comb == T){
@@ -228,5 +228,76 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
     return(g)
   }
   
+}
+
+## Boxplots containing future climate gas predictions----
+fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path = NULL, img_type = "pdf"){
+  
+  preds <- list.files(here(pred_path), pattern = glob2rx(paste0("*",gas,"*acbr*")), full.names = T)
+  
+  fig_list <- list()
+  
+  for(t in time_periods){
+    
+    ind <- which(time_periods == t)
+    
+    g_t <- preds[str_detect(preds, t)]
+    
+    vals <- c()
+    mnths <- c()
+    scen <- c()
+    
+    for(h in seq_along(g_t)){
+      
+      r <- rast(g_t[h])
+      
+      for(i in 1:nlyr(r)){
+        
+        vals <- c(vals, values(r[[i]], na.rm = T))
+        mnths <- c(mnths, rep(month.name[i], length(values(r[[i]], na.rm = T))))
+        scen <- c(scen, rep(scenarios[h], length(values(r[[i]], na.rm = T))))
+        
+      }
+    }
+    
+    df <- data.frame(vals = vals, 
+                     mnths = factor(mnths, levels = month.name[1:12]),
+                     scenario = factor(scen, levels = scenarios))
+    if(gas == "H2"){
+      
+      gas <- gsub("2", "[2]", gas)
+      
+    }
+    
+    g <- str2lang(gas)
+    
+    fig_list[[ind]] <- ggplot(df, aes(x = mnths, y = vals, fill = scenario)) +
+      geom_boxplot() +
+      theme_bw() +
+      theme(panel.grid = element_blank()) +
+      xlab("Month") +
+      ylab(bquote(Rate ~ (nmol ~ .(g) ~ hr^{-1} ~ g^{-1}))) +
+      scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
+                        name = "Emission\nscenario") +
+      ggtitle(t)
+  }
+  
+  gg <- ggpubr::ggarrange(fig_list[[2]], fig_list[[3]], fig_list[[4]], 
+                          nrow = 3, ncol = 1, common.legend = T)
+  
+  if(to_file == T){
+    
+    if(gas == "H2"){
+      
+      gas <- gsub("[2]", "2", gas)
+      
+    }
+    
+    ggsave(here(out_path, paste0(gas,"_boxes.",img_type), gg, device = img_type, 
+           units = "cm", width = 25, height = 20))
+    
+  }
+  
+  return(gg)
   
 }
