@@ -290,7 +290,7 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
       ggtitle(t)
   }
   
-  gg <- ggpubr::ggarrange(fig_list[[2]], fig_list[[3]], fig_list[[4]], 
+  gg <- ggpubr::ggarrange(fig_list[[1]], fig_list[[2]], fig_list[[3]], 
                           nrow = 3, ncol = 1, common.legend = T)
   
   if(to_file == T){
