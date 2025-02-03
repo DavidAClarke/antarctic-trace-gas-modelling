@@ -176,8 +176,9 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
     ggnewscale::new_scale("fill") +
     geom_spatraster(data =  r) +
     theme_bw() +
-    theme(plot.margin = unit(c(0, 0, 0, 0), 
-                             "inches"))
+    theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), 
+                             "inches"),
+          legend.position = "left")
   
   if(gas == "H2"){
     g <- g + scale_fill_whitebox_c(palette = "muted", 
@@ -202,11 +203,15 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
     for(i in 1:nlyr(r)){
       
       g <- ggplot() +
-        geom_sf(data = coast, fill = "#36454F") +
+        geom_sf(data = coast, aes(fill = surface), show.legend = F) +
+        scale_fill_manual(values = c("#f4f3ef", "grey", "grey", "grey"),
+                          breaks = c("land", "ice shelf", "ice tongue", "rumple")) +
+        ggnewscale::new_scale("fill") +
         geom_spatraster(data =  r[[i]]) +
         theme_bw() +
-        theme(plot.margin = unit(c(0, 0, 0, 0), 
-                                 "inches"))
+        theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), 
+                                 "inches"),
+              legend.position = "left")
       
       if(gas == "H2"){
         g <- g + scale_fill_whitebox_c(palette = "muted", 
