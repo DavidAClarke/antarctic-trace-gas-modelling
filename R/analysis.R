@@ -275,7 +275,9 @@ for(h in seq_along(co_preds)){
 ## Boxplots - examples
 fut_rate_boxes("H2", 
                time_periods = time_periods[-1], 
-               pred_path = here(dirname(here()), "data"))
+               pred_path = here(dirname(here()), "data"),
+               to_file = T,
+               out_path = here(dirname(here()), "figures"))
 
 # fig_list <- list()
 # 
