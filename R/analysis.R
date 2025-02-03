@@ -83,22 +83,23 @@ for(g in gases){
 h2m <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"), 
                ziformula = ~ poly(temp,2), data = gas_data[["H2"]])
 summary(h2m)
-confint(h2m)
-cv::cv(h2m, reps = 5)
+exp(confint(h2m))
+h2_cv <- cv::cv(h2m, reps = 1, k = "loo")
+#plot(h2_cv)
 
 # Plot model
 model_pred(gas_data[["H2"]], "H2", h2m)
 
 # Assess model
-simr <- simulateResiduals(h2m)
+simr <- simulateResiduals(h2m, n = 1000)
 plot(simr)
 
 # Carbon monoxide - zero-inflated Gamma glm
 com <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"), 
                ziformula = ~ poly(temp,2), data = gas_data[["CO"]])
 summary(com)
-confint(com)
-cv::cv(com, reps = 5)
+exp(confint(com))
+co_cv <- cv::cv(com, reps = 1, k = "loo")
 
 # Plot model
 model_pred(gas_data[["CO"]], "CO", com)
@@ -106,21 +107,21 @@ model_pred(gas_data[["CO"]], "CO", com)
 #plot_predictions(h2m, condition = "temp", points = 1, vcov = T, re.form = NA)
 
 # Assess model
-simr <- simulateResiduals(com)
+simr <- simulateResiduals(com, n = 1000)
 plot(simr)
 
 # Methane - zero-inflated Gamma glm
 ch4m <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"), 
                ziformula = ~ poly(temp,2), data = gas_data[["CH4"]])
 summary(ch4m)
-confint(ch4)
-cv::cv(ch4m, reps = 5)
+exp(confint(ch4m))
+cv::cv(ch4m, reps = 1, k = "loo")
 
 # Plot model
 model_pred(gas_data[["CH4"]], "CH4", ch4m)
 
 # Assess model
-simr <- simulateResiduals(ch4m)
+simr <- simulateResiduals(ch4m, n = 1000)
 plot(simr)
 
 ## Step 3: Create spatial predictions----
@@ -214,8 +215,10 @@ for(i in seq_along(gas_preds)){
 r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
 r2 <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
 
-h2_map <- pred_maps(r, comb = T, fun = mean, gas = "H2", ret = T, sve = F, fname = "H2_1981-2010")
-pred_maps(r2, comb = T, fun = mean, gas = "CO", sve = T, fname = "CO_1981-2010")
+h2_map <- pred_maps(r, comb = T, fun = mean, gas = "H2", 
+                    ret = T, sve = F, fname = "H2_1981-2010")
+co_map <- pred_maps(r2, comb = T, fun = mean, gas = "CO", 
+                    ret = T, sve = T, fname = "CO_1981-2010")
 
 ################################################################################
 ### Note: making rectangles to represent inset maps
