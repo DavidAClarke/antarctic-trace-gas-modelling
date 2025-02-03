@@ -214,9 +214,35 @@ for(i in seq_along(gas_preds)){
 r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
 r2 <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
 
-pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = "H2_1981-2010")
+h2_map <- pred_maps(r, comb = T, fun = mean, gas = "H2", ret = T, sve = F, fname = "H2_1981-2010")
 pred_maps(r2, comb = T, fun = mean, gas = "CO", sve = T, fname = "CO_1981-2010")
 
+################################################################################
+### Note: making rectangles to represent inset maps
+dml <- acbr %>% filter(ACBR_ID == 6)
+
+df <- data.frame(xmin = as.numeric(sf::st_bbox(dml)[1]),
+                 ymin = as.numeric(sf::st_bbox(dml)[2]),
+                 xmax = as.numeric(sf::st_bbox(dml)[3]),
+                 ymax = as.numeric(sf::st_bbox(dml)[4]))
+
+## make inset
+inset <- h2_map +
+          coord_sf(
+            xlim = sf::st_bbox(dml)[c(1,3)],
+            ylim = sf::st_bbox(dml)[c(2,4)],
+            expand = FALSE
+          )
+
+h2_map + 
+  geom_rect(data = df, 
+            mapping = aes(xmin = xmin ,ymin = ymin, 
+                          xmax = xmax, ymax = ymax),
+            fill = NA, 
+            colour = "black",
+            linewidth = 1
+)
+################################################################################
 h2_preds <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*H2*acbr*"), full.names = T)
 h2_names <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*H2*acbr*"), full.names = F)
 
