@@ -178,7 +178,7 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
     theme_bw() +
     theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), 
                              "inches"),
-          legend.position = "left")
+          legend.position = "top")
   
   if(gas == "H2"){
     g <- g + scale_fill_whitebox_c(palette = "muted", 
