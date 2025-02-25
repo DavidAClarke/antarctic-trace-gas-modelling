@@ -178,7 +178,9 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
     theme_bw() +
     theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), 
                              "inches"),
-          legend.position = "top")
+          legend.position = "top",
+          legend.key.width = unit(2, 'cm'),
+          legend.text = element_text(size = 12))
   
   if(gas == "H2"){
     g <- g + scale_fill_whitebox_c(palette = "muted", 
@@ -211,7 +213,9 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
         theme_bw() +
         theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), 
                                  "inches"),
-              legend.position = "left")
+              legend.position = "top",
+              legend.key.width = unit(2, 'cm'),
+              legend.text = element_text(size = 12))
       
       if(gas == "H2"){
         g <- g + scale_fill_whitebox_c(palette = "muted", 
@@ -282,7 +286,8 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
     fig_list[[ind]] <- ggplot(df, aes(x = mnths, y = vals, fill = scenario)) +
       geom_boxplot() +
       theme_bw() +
-      theme(panel.grid = element_blank()) +
+      theme(panel.grid = element_blank(),
+            legend.position = "top") +
       xlab("Month") +
       ylab(bquote(Rate ~ (nmol ~ .(g) ~ hr^{-1} ~ g^{-1}))) +
       scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
@@ -297,12 +302,12 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
     
     if(gas == "H2"){
       
-      gas <- gsub("[2]", "2", gas)
+      gas <- gsub("[2]", "2", gas, fixed = T)
       
     }
     
-    ggsave(here(out_path, paste0(gas,"_boxes.",img_type), gg, device = img_type, 
-           units = "cm", width = 25, height = 20))
+    ggsave(here(out_path, paste0(gas,"_boxes.",img_type)), gg, device = img_type, 
+           units = "cm", width = 25, height = 20)
     
   }
   
