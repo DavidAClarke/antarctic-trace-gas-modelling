@@ -88,7 +88,7 @@ h2_cv <- cv::cv(h2m, reps = 1, k = "loo")
 #plot(h2_cv)
 
 # Plot model
-model_pred(gas_data[["H2"]], "H2", h2m)
+h2m_plot <- model_pred(gas_data[["H2"]], "H2", h2m)
 
 # Assess model
 simr <- simulateResiduals(h2m, n = 1000)
@@ -102,7 +102,7 @@ exp(confint(com))
 co_cv <- cv::cv(com, reps = 1, k = "loo")
 
 # Plot model
-model_pred(gas_data[["CO"]], "CO", com)
+com_plot <-model_pred(gas_data[["CO"]], "CO", com)
 # Alternatively, use marginaleffects::plot_predictions()
 #plot_predictions(h2m, condition = "temp", points = 1, vcov = T, re.form = NA)
 
@@ -118,11 +118,14 @@ exp(confint(ch4m))
 cv::cv(ch4m, reps = 1, k = "loo")
 
 # Plot model
-model_pred(gas_data[["CH4"]], "CH4", ch4m)
+ch4m_plot <- model_pred(gas_data[["CH4"]], "CH4", ch4m)
 
 # Assess model
 simr <- simulateResiduals(ch4m, n = 1000)
 plot(simr)
+
+## Panel prediction plot
+ggpubr::ggarrange(h2m_plot, com_plot, ch4m_plot, nrow = 1, ncol = 3)
 
 ## Step 3: Create spatial predictions----
 # Load Antarctic coastline shapefile
