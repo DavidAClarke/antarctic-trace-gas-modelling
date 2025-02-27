@@ -90,6 +90,25 @@ h2_cv <- cv::cv(h2m, reps = 1, k = "loo")
 # Plot model
 h2m_plot <- model_pred(gas_data[["H2"]], "H2", h2m)
 
+## Temperature(s) with greatest changes in oxidation rate
+xweight <- seq(min(gas_data[["H2"]]$temp), max(gas_data[["H2"]]$temp), 1) 
+delta_ys <- c()
+
+for(i in seq_along(xweight)){
+  
+  new_data <- data.frame(temp = c(xweight[i], xweight[i+1]))
+  y_hat <- predict(h2m, new_data, type = "response")
+  delta_y <- exp(diff(y_hat))
+  delta_ys <- c(delta_ys, delta_y)
+  
+}
+
+df <- data.frame(temp = xweight, delta_rate = abs(delta_ys - 1))
+plot(df$temp, df$delta_rate, type = "line")
+
+qt3 <- which(df$delta_rate >= summary(df$delta_rate)[5]) # 3rd quart summary(df$delta_rate)
+df[qt3,]
+
 # Assess model
 simr <- simulateResiduals(h2m, n = 1000)
 plot(simr)
@@ -105,6 +124,24 @@ co_cv <- cv::cv(com, reps = 1, k = "loo")
 com_plot <-model_pred(gas_data[["CO"]], "CO", com)
 # Alternatively, use marginaleffects::plot_predictions()
 #plot_predictions(h2m, condition = "temp", points = 1, vcov = T, re.form = NA)
+## Temperature(s) with greatest changes in oxidation rate
+xweight <- seq(min(gas_data[["CO"]]$temp), max(gas_data[["CO"]]$temp), 1) 
+delta_ys <- c()
+
+for(i in seq_along(xweight)){
+  
+  new_data <- data.frame(temp = c(xweight[i], xweight[i+1]))
+  y_hat <- predict(com, new_data, type = "response")
+  delta_y <- exp(diff(y_hat))
+  delta_ys <- c(delta_ys, delta_y)
+  
+}
+
+df <- data.frame(temp = xweight, delta_rate = abs(delta_ys - 1))
+plot(df$temp, df$delta_rate, type = "line")
+
+qt3 <- which(df$delta_rate >= summary(df$delta_rate)[5]) # 3rd quart summary(df$delta_rate)
+df[qt3,]
 
 # Assess model
 simr <- simulateResiduals(com, n = 1000)
@@ -119,6 +156,25 @@ cv::cv(ch4m, reps = 1, k = "loo")
 
 # Plot model
 ch4m_plot <- model_pred(gas_data[["CH4"]], "CH4", ch4m)
+
+## Temperature(s) with greatest changes in oxidation rate
+xweight <- seq(min(gas_data[["CH4"]]$temp), max(gas_data[["CH4"]]$temp), 1) 
+delta_ys <- c()
+
+for(i in seq_along(xweight)){
+  
+  new_data <- data.frame(temp = c(xweight[i], xweight[i+1]))
+  y_hat <- predict(ch4m, new_data, type = "response")
+  delta_y <- exp(diff(y_hat))
+  delta_ys <- c(delta_ys, delta_y)
+  
+}
+
+df <- data.frame(temp = xweight, delta_rate = abs(delta_ys - 1))
+plot(df$temp, df$delta_rate, type = "line")
+
+qt3 <- which(df$delta_rate >= summary(df$delta_rate)[5]) # 3rd quart summary(df$delta_rate)
+df[qt3,]
 
 # Assess model
 simr <- simulateResiduals(ch4m, n = 1000)
@@ -280,7 +336,15 @@ fut_rate_boxes("H2",
                time_periods = time_periods[-1], 
                pred_path = here(dirname(here()), "data"),
                to_file = T,
-               out_path = here(dirname(here()), "figures"))
+               out_path = here(dirname(here()), "figures"),
+               img_type = "png")
+
+fut_rate_boxes("CO", 
+               time_periods = time_periods[-1], 
+               pred_path = here(dirname(here()), "data"),
+               to_file = T,
+               out_path = here(dirname(here()), "figures"),
+               img_type = "png")
 
 # fig_list <- list()
 # 
