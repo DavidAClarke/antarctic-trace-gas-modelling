@@ -105,6 +105,7 @@ for(i in seq_along(xweight)){
 
 df <- data.frame(temp = xweight, delta_rate = abs(delta_ys - 1))
 plot(df$temp, df$delta_rate, type = "line")
+abline(h = as.numeric(summary(df$delta_rate)[5]), lty = 2)
 
 qt3 <- which(df$delta_rate >= summary(df$delta_rate)[5]) # 3rd quart summary(df$delta_rate)
 df[qt3,]
@@ -139,6 +140,7 @@ for(i in seq_along(xweight)){
 
 df <- data.frame(temp = xweight, delta_rate = abs(delta_ys - 1))
 plot(df$temp, df$delta_rate, type = "line")
+abline(h = as.numeric(summary(df$delta_rate)[5]), lty = 2)
 
 qt3 <- which(df$delta_rate >= summary(df$delta_rate)[5]) # 3rd quart summary(df$delta_rate)
 df[qt3,]
@@ -172,6 +174,7 @@ for(i in seq_along(xweight)){
 
 df <- data.frame(temp = xweight, delta_rate = abs(delta_ys - 1))
 plot(df$temp, df$delta_rate, type = "line")
+abline(h = as.numeric(summary(df$delta_rate)[5]), lty = 2)
 
 qt3 <- which(df$delta_rate >= summary(df$delta_rate)[5]) # 3rd quart summary(df$delta_rate)
 df[qt3,]
@@ -280,6 +283,32 @@ co_map <- pred_maps(r2, comb = T, fun = mean, gas = "CO",
                     ret = T, sve = T, fname = "CO_1981-2010")
 
 ################################################################################
+## ACBR boxplots
+r_mean <- app(r, mean)
+r_med <- app(r, median)
+
+df <- data.frame(acbr = c(), rates = c(), long = c())
+for(a in unique(acbr$ACBR_Name)){
+  
+  p <- acbr %>% dplyr::filter(ACBR_Name == a)
+  x <- st_coordinates(st_centroid(st_union(p)))[1]
+  m <- mask(r_med, p)
+  v <- values(m, na.rm = T)
+  df2 <- data.frame(acbr = rep(a, length(v)),
+                    rates = v,
+                    long = rep(x, length(v)))
+  df <- rbind(df, df2)
+  
+}
+
+# Order by longitude
+ggplot(df, aes(x = median, y = reorder(acbr, long))) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(panel.grid = element_blank()) +
+  xlab(expression(Rate ~ (nmol ~ H[2] ~ hr^{-1} ~ g^{-1}))) +
+  ylab("ACBR") 
+
 ### Note: making rectangles to represent inset maps
 dml <- acbr %>% filter(ACBR_ID == 6)
 
