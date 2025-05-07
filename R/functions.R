@@ -243,6 +243,7 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
 }
 
 ## Boxplots containing future climate gas predictions----
+# Maybe call it fut_rates and have the figure be a choice. Can create a figure and/or a data frame
 fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path = NULL, img_type = "pdf"){
   
   preds <- list.files(pred_path, pattern = glob2rx(paste0("*",gas,"*acbr*")), full.names = T)
@@ -275,6 +276,7 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
     df <- data.frame(vals = vals, 
                      mnths = factor(mnths, levels = month.name[1:12]),
                      scenario = factor(scen, levels = scenarios))
+    
     if(gas == "H2"){
       
       gas <- gsub("2", "[2]", gas)
