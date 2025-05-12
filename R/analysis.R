@@ -274,25 +274,25 @@ for(i in seq_along(gas_preds)){
 
 ## Step 4: Making figures----
 ## Maps - first make a map of the mean of the 12 months
-r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
-r2 <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
+h2_r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
+co_r <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
 
-h2_map <- pred_maps(r, comb = T, fun = mean, gas = "H2", 
+h2_map <- pred_maps(h2_r, comb = T, fun = mean, gas = "H2", 
                     ret = T, sve = F, fname = "H2_1981-2010")
-co_map <- pred_maps(r2, comb = T, fun = mean, gas = "CO", 
+co_map <- pred_maps(co_r, comb = T, fun = mean, gas = "CO", 
                     ret = T, sve = T, fname = "CO_1981-2010")
 
 ################################################################################
 ## ACBR boxplots
-r_mean <- app(r, mean)
-r_med <- app(r, median)
+h2_r_mean <- app(h2_r, mean)
+h2_r_med <- app(h2_r, median)
 
 df <- data.frame(acbr = c(), rates = c(), long = c())
 for(a in unique(acbr$ACBR_Name)){
   
   p <- acbr %>% dplyr::filter(ACBR_Name == a)
   x <- st_coordinates(st_centroid(st_union(p)))[1]
-  m <- mask(r_med, p)
+  m <- mask(h2_r_med, p)
   v <- values(m, na.rm = T)
   df2 <- data.frame(acbr = rep(a, length(v)),
                     rates = v,
@@ -301,11 +301,13 @@ for(a in unique(acbr$ACBR_Name)){
   
 }
 
-# Order by longitude
-ggplot(df, aes(x = median, y = reorder(acbr, long))) +
+# Order by median rate
+h2_box <- ggplot(df, aes(x = median, y = reorder(acbr, median))) +
   geom_boxplot() +
   theme_bw() +
-  theme(panel.grid = element_blank()) +
+  theme(panel.grid = element_blank(),
+        axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14)) +
   xlab(expression(Rate ~ (nmol ~ H[2] ~ hr^{-1} ~ g^{-1}))) +
   ylab("ACBR") 
 
