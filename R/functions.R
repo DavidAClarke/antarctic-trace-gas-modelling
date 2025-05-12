@@ -180,7 +180,11 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
                              "inches"),
           legend.position = "top",
           legend.key.width = unit(2, 'cm'),
-          legend.text = element_text(size = 12))
+          legend.text = element_text(size = 12),
+          panel.border = element_blank(),
+          panel.grid = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank())
   
   if(gas == "H2"){
     g <- g + scale_fill_whitebox_c(palette = "muted", 
