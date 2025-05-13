@@ -301,8 +301,9 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
       ggtitle(t)
   }
   
-  # gg <- ggpubr::ggarrange(fig_list[1:length(time_periods)], 
-  #                         nrow = length(time_periods), ncol = 1, common.legend = T)
+  gg <- ggpubr::ggarrange(fig_list,
+                          nrow = length(fig_list), ncol = 1, 
+                          common.legend = T)
   
   if(to_file == T){
     
@@ -321,7 +322,7 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
   
 }
 
-
+## Boxplots containing future climate gas predictions for seasons----
 fut_rate_season_boxes <- function(gas, time_periods, season, pred_path, to_file = F, out_path = NULL, img_type = "pdf"){
   
   sr <- list(Summer = c(1,2,12), Winter = c(6,7,8))
