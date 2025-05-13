@@ -284,6 +284,7 @@ co_map <- pred_maps(co_r, comb = T, fun = median, gas = "CO",
 
 ################################################################################
 ## ACBR boxplots
+## Hydrogen
 h2_r_mean <- app(h2_r, mean)
 h2_r_med <- app(h2_r, median)
 
@@ -310,6 +311,39 @@ h2_box <- ggplot(df, aes(x = median, y = reorder(acbr, median))) +
         axis.text = element_text(size = 14)) +
   xlab(expression(Rate ~ (nmol ~ H[2] ~ hr^{-1} ~ g^{-1}))) +
   ylab("ACBR") 
+
+## Carbon monoxide
+co_r_mean <- app(co_r, mean)
+co_r_med <- app(co_r, median)
+
+df <- data.frame(acbr = c(), rates = c(), long = c())
+for(a in unique(acbr$ACBR_Name)){
+  
+  p <- acbr %>% dplyr::filter(ACBR_Name == a)
+  x <- st_coordinates(st_centroid(st_union(p)))[1]
+  m <- mask(h2_r_med, p)
+  v <- values(m, na.rm = T)
+  df2 <- data.frame(acbr = rep(a, length(v)),
+                    rates = v,
+                    long = rep(x, length(v)))
+  df <- rbind(df, df2)
+  
+}
+
+# Order by median rate
+co_box <- ggplot(df, aes(x = median, y = reorder(acbr, median))) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14)) +
+  xlab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1}))) +
+  ylab("ACBR") 
+
+ggpubr::ggarrange(h2_map, h2_box, 
+                  co_map, co_box, 
+                  nrow = 2, ncol = 2,
+                  common.legend = F)
 
 ### Note: making rectangles to represent inset maps
 dml <- acbr %>% filter(ACBR_ID == 6)
