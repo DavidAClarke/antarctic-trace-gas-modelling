@@ -321,7 +321,7 @@ for(a in unique(acbr$ACBR_Name)){
   
   p <- acbr %>% dplyr::filter(ACBR_Name == a)
   x <- st_coordinates(st_centroid(st_union(p)))[1]
-  m <- mask(h2_r_med, p)
+  m <- mask(co_r_med, p)
   v <- values(m, na.rm = T)
   df2 <- data.frame(acbr = rep(a, length(v)),
                     rates = v,
@@ -340,8 +340,8 @@ co_box <- ggplot(df, aes(x = median, y = reorder(acbr, median))) +
   xlab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1}))) +
   ylab("ACBR") 
 
-ggpubr::ggarrange(h2_map, h2_box, 
-                  co_map, co_box, 
+ggpubr::ggarrange(h2_map, co_map, 
+                  h2_box, co_box, 
                   nrow = 2, ncol = 2,
                   common.legend = F)
 
@@ -370,92 +370,67 @@ h2_map +
             linewidth = 1
 )
 ################################################################################
-h2_preds <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*H2*acbr*"), full.names = T)
-h2_names <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*H2*acbr*"), full.names = F)
+h2_preds <- list.files(here(dirname(here()), "data"), 
+                       pattern = glob2rx("*H2*acbr*"), 
+                       full.names = T)
+h2_names <- list.files(here(dirname(here()), "data"), 
+                       pattern = glob2rx("*H2*acbr*"), 
+                       full.names = F)
 
-co_preds <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*CO*acbr*"), full.names = T)
-co_names <- list.files(here(dirname(here()), "data"), pattern = glob2rx("*CO*acbr*"), full.names = F)
+co_preds <- list.files(here(dirname(here()), "data"), 
+                       pattern = glob2rx("*CO*acbr*"), 
+                       full.names = T)
+co_names <- list.files(here(dirname(here()), "data"), 
+                       pattern = glob2rx("*CO*acbr*"), 
+                       full.names = F)
 
-for(h in seq_along(h2_preds)){
-  
-  fname <- gsub("_ant_acbr.tif", "", h2_names[h])
-  
-  r <- rast(h2_preds[h])
-  
-  pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = fname, ret = F)
-  
-}
-
-for(h in seq_along(co_preds)){
-  
-  fname <- gsub("_ant_acbr.tif", "", co_names[h])
-  
-  r <- rast(co_preds[h])
-  
-  pred_maps(r, comb = T, fun = mean, gas = "CO", sve = T, fname = fname, ret = F)
-  
-}
-
-## Boxplots - examples
-fut_rate_boxes("H2", 
-               time_periods = time_periods[-1], 
-               pred_path = here(dirname(here()), "data"),
-               to_file = T,
-               out_path = here(dirname(here()), "figures"),
-               img_type = "png")
-
-fut_rate_boxes("CO", 
-               time_periods = time_periods[-1], 
-               pred_path = here(dirname(here()), "data"),
-               to_file = T,
-               out_path = here(dirname(here()), "figures"),
-               img_type = "png")
-
-# fig_list <- list()
-# 
-# for(t in time_periods[-1]){
+# for(h in seq_along(h2_preds)){
 #   
-#   ind <- which(time_periods == t)
-# 
-#   h2_t <- h2_preds[str_detect(h2_preds, t)]
+#   fname <- gsub("_ant_acbr.tif", "", h2_names[h])
 #   
-#   vals <- c()
-#   mnths <- c()
-#   scen <- c()
+#   r <- rast(h2_preds[h])
 #   
-#   for(h in seq_along(h2_t)){
-#     
-#     r <- rast(h2_t[h])
-#     
-#     for(i in 1:nlyr(r)){
-#       
-#       vals <- c(vals, values(r[[i]], na.rm = T))
-#       mnths <- c(mnths, rep(month.name[i], length(values(r[[i]], na.rm = T))))
-#       scen <- c(scen, rep(scenarios[h], length(values(r[[i]], na.rm = T))))
-#                 
-#       }
-#     }
+#   pred_maps(r, comb = T, fun = mean, gas = "H2", sve = T, fname = fname, ret = F)
 #   
-#     df <- data.frame(vals = vals, 
-#                      mnths = factor(mnths, levels = month.name[1:12]),
-#                      scenario = factor(scen, levels = scenarios))
-#   
-#     
-#     fig_list[[ind]] <- ggplot(df, aes(x = mnths, y = vals, fill = scenario)) +
-#                         geom_boxplot() +
-#                         theme_bw() +
-#                         theme(panel.grid = element_blank()) +
-#                         xlab("Month") +
-#                         ylab(expression(Rate ~ (nmol ~ H[2] ~ hr^{-1} ~ g^{-1}))) +
-#                         scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
-#                           name = "Emission\nscenario") +
-#       ggtitle(t)
 # }
 # 
-# gg <- ggpubr::ggarrange(fig_list[[2]], fig_list[[3]], fig_list[[4]], 
-#                         nrow = 3, ncol = 1, common.legend = T)
-# 
-# ggsave(here(dirname(here()), "figures", "H2_boxes.pdf"), gg, device = "pdf", 
-#        units = "cm", width = 25, height = 20)
+# for(h in seq_along(co_preds)){
+#   
+#   fname <- gsub("_ant_acbr.tif", "", co_names[h])
+#   
+#   r <- rast(co_preds[h])
+#   
+#   pred_maps(r, comb = T, fun = mean, gas = "CO", sve = T, fname = fname, ret = F)
+#   
+# }
 
+## Boxplots - examples
+h2 <- fut_rate_boxes("H2", 
+               time_periods = time_periods[2], 
+               pred_path = here(dirname(here()), "data"),
+               to_file = F,
+               out_path = here(dirname(here()), "figures"),
+               img_type = "png")
+
+co <- fut_rate_boxes("CO", 
+               time_periods = time_periods[2], 
+               pred_path = here(dirname(here()), "data"),
+               to_file = F,
+               out_path = here(dirname(here()), "figures"),
+               img_type = "png")
+
+## Summer vs Winter
+seasons <- c("Summer", "Winter")
+
+h2_season <- fut_rate_season_boxes("H2",
+                      time_periods = time_periods[3:4],
+                      season = seasons,
+                      pred_path = here(dirname(here()), "data"),
+                      to_file = F)
+
+co_season <- fut_rate_season_boxes("CO",
+                                   time_periods = time_periods[3:4],
+                                   season = seasons,
+                                   pred_path = here(dirname(here()), "data"),
+                                   to_file = F)
 
