@@ -1,10 +1,11 @@
-################################################################################
-## Script name: analysis.R
-## Author: David Clarke
-## Copyright (c) David Clarke, 2025
-## Email: david_anthony_clarke@hotmail.com
-################################################################################
+#-------------------------------------------------------------------------------
+# Analysing trace gas oxidation
+#-------------------------------------------------------------------------------
 
+
+#-------------------------------------------------------------------------------
+# Setup
+#-------------------------------------------------------------------------------
 ## Load required libraries
 pkgs <- c("dplyr","ggplot2", "stringr", "sf", "terra", "here", "readxl", 
           "glmmTMB", "DHARMa", "tidyterra", "tidyterra")
@@ -18,8 +19,9 @@ chelsa <- here(shared_path, "environmental", "chelsa")
 ## Import user-defined functions
 source("R/functions.R")
 
-################################### Analysis ###################################
-## Step 1: Prepare climate data----
+#-------------------------------------------------------------------------------
+# Prepare climate data
+#-------------------------------------------------------------------------------
 ## Model names, emission scenarios and time periods
 models <- c("GFDL-ESM4", "IPSL-CM6A-LR", "MPI-ESM1-2-HR", "MRI-ESM2-0", "UKESM1-0-LL")
 scenarios <- c("ssp126", "ssp370", "ssp585")
@@ -28,7 +30,7 @@ time_periods <- c("1981-2010", "2011-2040", "2041-2070", "2071-2100")
 ## Create reference extent for cropping
 my_ext <- ext(c(xmin = -180, xmax = 180, ymin = -90, ymax = -50))
 
-## Crop and re-project global CHELSA temperature data to equal area polar projection
+## Crop & re-project temperature data to equal area polar projection
 lapply(time_periods, function(i){
   
   ant_prepare(i, models = models, scenarios = scenarios, 
@@ -45,16 +47,18 @@ lapply(time_periods[2:4], function(i){
   
 })
 
-
-## Step 2: Develop trace gas models----
-## Load gas rate data
+#-------------------------------------------------------------------------------
+# Load gas rate data
+#-------------------------------------------------------------------------------
 gases <- c("H2", "CO", "CH4")
 gas_data <- list()
 
 for(g in gases){
   
   # Read in excel sheet
-  mydata <- read_excel(here(dirname(here()),"data", "Antarctic temps gas rates final.xlsx"), 
+  mydata <- read_excel(here(dirname(here()),
+                            "data", 
+                            "Antarctic temps gas rates final.xlsx"), 
                        sheet = g, skip = 1) %>%
     
     # Manipulate the data into the proper format  
@@ -78,7 +82,9 @@ for(g in gases){
   
 }
 
-## Create gas rate models
+#-------------------------------------------------------------------------------
+# Develop trace gas models
+#-------------------------------------------------------------------------------
 # Hydrogren - zero-inflated Gamma glm
 h2m <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"), 
                ziformula = ~ poly(temp,2), data = gas_data[["H2"]])
@@ -186,7 +192,9 @@ plot(simr)
 ## Panel prediction plot
 ggpubr::ggarrange(h2m_plot, com_plot, ch4m_plot, nrow = 1, ncol = 3)
 
-## Step 3: Create spatial predictions----
+#-------------------------------------------------------------------------------
+# Create spatial predictions
+#-------------------------------------------------------------------------------
 # Load Antarctic coastline shapefile
 coast <- st_read(here(shared_path, "environmental", "coastline", 
                       "Coastline.shp"), quiet = T) %>%
@@ -200,7 +208,7 @@ acbr <- st_read(here(shared_path, "biodiversity", "acbr", "ACBRs_v2_2016",
   st_transform("ESRI:102020")
 
 ## Current climate
-# Read Antarctic temperature data (text example)
+# Read Antarctic temperature data
 r <- rast(here(chelsa, "1981-2010", "CHELSA_tas_1981-2010_ant.tif"))
 
 # Create spatial prediction for each month (i.e., layer)
@@ -256,9 +264,6 @@ for(t in time_periods[-1]){
   }
 }
 
-# Carbon monoxide - TO TEST
-#fut_spat_pred(time_periods[-1], "CO", chelsa, com)
-
 ## Mask predictions to ACBR layer
 gas_preds <- list.files(here(dirname(here()), "data"), pattern = "tif", full.names = T)
 gas_preds_nm <- list.files(here(dirname(here()), "data"), pattern = "tif", full.names = F)
@@ -272,7 +277,9 @@ for(i in seq_along(gas_preds)){
   
 }
 
-## Step 4: Making figures----
+#-------------------------------------------------------------------------------
+# Making figures
+#-------------------------------------------------------------------------------
 ## Maps - first make a map of the mean of the 12 months
 h2_r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
 co_r <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
@@ -282,9 +289,8 @@ h2_map <- pred_maps(h2_r, comb = T, fun = median, gas = "H2",
 co_map <- pred_maps(co_r, comb = T, fun = median, gas = "CO", 
                     ret = T, sve = T, fname = "CO_1981-2010")
 
-################################################################################
 ## ACBR boxplots
-## Hydrogen
+# Hydrogen
 h2_r_mean <- app(h2_r, mean)
 h2_r_med <- app(h2_r, median)
 
@@ -345,6 +351,7 @@ ggpubr::ggarrange(h2_map, co_map,
                   nrow = 2, ncol = 2,
                   common.legend = F)
 
+################################################################################
 ### Note: making rectangles to represent inset maps
 dml <- acbr %>% filter(ACBR_ID == 6)
 
@@ -404,22 +411,22 @@ co_names <- list.files(here(dirname(here()), "data"),
 #   
 # }
 
-## Boxplots - examples
+## Boxplots - monthly 
 h2 <- fut_rate_boxes("H2", 
-               time_periods = time_periods[2], 
+               time_periods = time_periods[2], #2011-2040
                pred_path = here(dirname(here()), "data"),
                to_file = F,
                out_path = here(dirname(here()), "figures"),
                img_type = "png")
 
 co <- fut_rate_boxes("CO", 
-               time_periods = time_periods[2], 
+               time_periods = time_periods[2], #2011-2040
                pred_path = here(dirname(here()), "data"),
                to_file = F,
                out_path = here(dirname(here()), "figures"),
                img_type = "png")
 
-## Summer vs Winter
+## Boxplots - Summer vs Winter
 seasons <- c("Summer", "Winter")
 
 h2_season <- fut_rate_season_boxes("H2",
