@@ -301,7 +301,7 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
       ggtitle(t)
   }
   
-  gg <- ggpubr::ggarrange(fig_list,
+  gg <- ggpubr::ggarrange(plotlist = fig_list,
                           nrow = length(fig_list), ncol = 1, 
                           common.legend = T)
   
@@ -383,8 +383,8 @@ fut_rate_season_boxes <- function(gas, time_periods, season, pred_path, to_file 
       ggtitle(t)
   }
   
-  gg <- ggpubr::ggarrange(fig_list[[1]], fig_list[[2]], 
-                          nrow = 1, ncol = 2, 
+  gg <- ggpubr::ggarrange(plotlist = fig_list, 
+                          nrow = 1, ncol = length(fig_list), 
                           common.legend = T)
   
   return(gg)
