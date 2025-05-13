@@ -320,3 +320,76 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
   return(gg)
   
 }
+
+
+fut_rate_season_boxes <- function(gas, time_periods, season, pred_path, to_file = F, out_path = NULL, img_type = "pdf"){
+  
+  sr <- list(Summer = c(1,2,12), Winter = c(6,7,8))
+  
+  preds <- list.files(pred_path, pattern = glob2rx(paste0("*",gas,"*acbr*")), full.names = T)
+  
+  fig_list <- list()
+  
+  for(t in time_periods){
+    
+    ind <- which(time_periods == t)
+    
+    g_t <- preds[str_detect(preds, t)]
+    
+    vals <- c()
+    seas <- c()
+    scen <- c()
+    
+    for(h in seq_along(g_t)){
+      
+      r <- rast(g_t[h])
+      
+      for(s in season){
+      
+          v <- r |> 
+            subset(sr[[s]]) |> 
+            app(mean, threads = T) |> 
+            values(na.rm = T)
+          
+          vals <- c(vals, v)
+          seas <- c(seas, rep(s, length(v)))
+          scen <- c(scen, rep(scenarios[h], length(v)))
+          
+        }
+    }
+    
+    df <- data.frame(vals = vals, 
+                     seas = factor(seas, levels = c("Summer", "Winter")),
+                     scenario = factor(scen, levels = scenarios))
+      
+    if(gas == "H2"){
+      
+      gas <- gsub("2", "[2]", gas)
+      
+    }
+    
+    g <- str2lang(gas)
+    
+    fig_list[[ind]] <- ggplot(df, aes(x = seas, y = vals, fill = scenario)) +
+      geom_boxplot() +
+      theme_bw() +
+      theme(panel.grid = element_blank(),
+            legend.position = "top") +
+      xlab("Month") +
+      ylab(bquote(Rate ~ (nmol ~ .(g) ~ hr^{-1} ~ g^{-1}))) +
+      scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
+                        name = "Emission\nscenario") +
+      ggtitle(t)
+  }
+  
+  gg <- ggpubr::ggarrange(fig_list[[1]], fig_list[[2]], 
+                          nrow = 1, ncol = 2, 
+                          common.legend = T)
+  
+  return(gg)
+  
+}
+    
+  
+    
+    
