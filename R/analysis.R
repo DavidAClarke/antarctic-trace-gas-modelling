@@ -426,6 +426,17 @@ co <- fut_rate_boxes("CO",
                out_path = here(dirname(here()), "figures"),
                img_type = "png")
 
+boxes <- ggpubr::ggarrange(h2,co, nrow = 2, ncol = 1, common.legend = T)
+
+ggsave("boxes_2011-2040.png", 
+       path = here(dirname(here()), "figures"),
+       plot = boxes, 
+       device = "png",
+       width = 12, 
+       height = 10, 
+       units = "in", 
+       dpi = 600)
+
 ## Boxplots - Summer vs Winter
 seasons <- c("Summer", "Winter")
 
@@ -441,3 +452,20 @@ co_season <- fut_rate_season_boxes("CO",
                                    pred_path = here(dirname(here()), "data"),
                                    to_file = F)
 
+season_boxes <- ggpubr::ggarrange(h2_season,co_season, 
+                                  nrow = 1, ncol = 2, 
+                                  common.legend = T)
+
+## Boxplots - combined
+all_boxes <- ggpubr::ggarrange(boxes,season_boxes,
+                               nrow = 2, ncol = 1,
+                               common.legend = T)
+
+ggsave("all_boxes.png", 
+       path = here(dirname(here()), "figures"),
+       plot = all_boxes, 
+       device = "png",
+       width = 12, 
+       height = 10, 
+       units = "in", 
+       dpi = 600)
