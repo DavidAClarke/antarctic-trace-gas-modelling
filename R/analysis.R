@@ -414,6 +414,7 @@ co_names <- list.files(here(dirname(here()), "data"),
 ## Boxplots - monthly 
 h2 <- fut_rate_boxes("H2", 
                time_periods = time_periods[2], #2011-2040
+               scenarios = scenarios[1],
                pred_path = here(dirname(here()), "data"),
                to_file = F,
                out_path = here(dirname(here()), "figures"),
@@ -421,6 +422,7 @@ h2 <- fut_rate_boxes("H2",
 
 co <- fut_rate_boxes("CO", 
                time_periods = time_periods[2], #2011-2040
+               scenarios = scenarios[1],
                pred_path = here(dirname(here()), "data"),
                to_file = F,
                out_path = here(dirname(here()), "figures"),
@@ -440,25 +442,25 @@ ggsave("boxes_2011-2040.png",
 ## Boxplots - Summer vs Winter
 seasons <- c("Summer", "Winter")
 
-h2_season <- fut_rate_season_boxes("H2",
+h2_season <- fut_rate_season_boxes(gas = "H2",
                       time_periods = time_periods[3:4],
                       season = seasons,
                       pred_path = here(dirname(here()), "data"),
                       to_file = F)
 
-co_season <- fut_rate_season_boxes("CO",
-                                   time_periods = time_periods[3:4],
-                                   season = seasons,
-                                   pred_path = here(dirname(here()), "data"),
-                                   to_file = F)
+co_season <- fut_rate_season_boxes(gas = "CO",
+                      time_periods = time_periods[3:4],
+                      season = seasons,
+                      pred_path = here(dirname(here()), "data"),
+                      to_file = F)
 
 season_boxes <- ggpubr::ggarrange(h2_season,co_season, 
                                   nrow = 1, ncol = 2, 
                                   common.legend = T)
 
 ## Boxplots - combined
-all_boxes <- ggpubr::ggarrange(boxes,season_boxes,
-                               nrow = 2, ncol = 1,
+all_boxes <- ggpubr::ggarrange(h2,co,season_boxes,
+                               nrow = 3, ncol = 1,
                                common.legend = T)
 
 ggsave("all_boxes.png", 
