@@ -248,7 +248,7 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
 
 ## Boxplots containing future climate gas predictions----
 # Maybe call it fut_rates and have the figure be a choice. Can create a figure and/or a data frame
-fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path = NULL, img_type = "pdf"){
+fut_rate_boxes <- function(gas, time_periods, scenarios, pred_path, to_file = F, out_path = NULL, img_type = "pdf"){
   
   preds <- list.files(pred_path, pattern = glob2rx(paste0("*",gas,"*acbr*")), full.names = T)
   
@@ -259,6 +259,7 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
     ind <- which(time_periods == t)
     
     g_t <- preds[str_detect(preds, t)]
+    g_t <- g_t[str_detect(g_t, scenarios)]
     
     vals <- c()
     mnths <- c()
@@ -289,6 +290,8 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
     
     g <- str2lang(gas)
     
+    cols <- c("#d35199ff", "#52c2e8ff", "#f4e01dff")
+    
     fig_list[[ind]] <- ggplot(df, aes(x = mnths, y = vals, fill = scenario)) +
       geom_boxplot() +
       theme_bw() +
@@ -296,7 +299,7 @@ fut_rate_boxes <- function(gas, time_periods, pred_path, to_file = F, out_path =
             legend.position = "top") +
       xlab("Month") +
       ylab(bquote(Rate ~ (nmol ~ .(g) ~ hr^{-1} ~ g^{-1}))) +
-      scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
+      scale_fill_manual(values = cols[1:length(scenarios)],
                         name = "Emission\nscenario") +
       ggtitle(t)
   }
@@ -331,11 +334,11 @@ fut_rate_season_boxes <- function(gas, time_periods, season, pred_path, to_file 
   
   fig_list <- list()
   
-  for(t in time_periods){
+  #for(t in time_periods){
     
-    ind <- which(time_periods == t)
+    #ind <- which(time_periods == t)
     
-    g_t <- preds[str_detect(preds, t)]
+    g_t <- preds[str_detect(preds, time_periods[1])|str_detect(preds, time_periods[2])]
     
     vals <- c()
     seas <- c()
@@ -354,15 +357,36 @@ fut_rate_season_boxes <- function(gas, time_periods, season, pred_path, to_file 
           
           vals <- c(vals, v)
           seas <- c(seas, rep(s, length(v)))
-          scen <- c(scen, rep(scenarios[h], length(v)))
+          scen <- c(scen, rep(rep(scenarios,2)[h], length(v)))
           
         }
     }
     
     df <- data.frame(vals = vals, 
                      seas = factor(seas, levels = c("Summer", "Winter")),
-                     scenario = factor(scen, levels = scenarios))
+                     scenario = factor(scen, levels = scenarios),
+                     tp = as.factor(c(rep(time_periods[1], 1096752), rep(time_periods[2], 1096752))))
+    
+    df <- df %>% mutate(seas_time = factor(paste(seas, tp), 
+                                           levels = c("Summer 2041-2070", 
+                                                      "Winter 2041-2070",
+                                                      "Summer 2071-2100",
+                                                      "Winter 2071-2100")))
       
+    if(gas == "H2"){
+      
+      g_breaks <- c(0,0.25,0.5,0.75,1)
+      g_limits <- c(0,1.1)
+      
+    } else 
+      
+    if(gas == "CO"){
+        
+      g_breaks <- c(0,0.001,0.002,0.003)
+      g_limits <- c(0,0.0035)
+      
+    }
+    
     if(gas == "H2"){
       
       gas <- gsub("2", "[2]", gas)
@@ -371,25 +395,29 @@ fut_rate_season_boxes <- function(gas, time_periods, season, pred_path, to_file 
     
     g <- str2lang(gas)
     
-    fig_list[[ind]] <- ggplot(df, aes(x = seas, y = vals, fill = scenario)) +
+    gg <- ggplot(df, aes(x = seas_time, y = vals, fill = scenario)) +
       geom_boxplot() +
       theme_bw() +
       theme(panel.grid = element_blank(),
             legend.position = "top") +
-      xlab("Month") +
+      xlab("Season | Time period") +
       ylab(bquote(Rate ~ (nmol ~ .(g) ~ hr^{-1} ~ g^{-1}))) +
+      scale_y_continuous(breaks = g_breaks,
+                         limits = g_limits) +
       scale_fill_manual(values = c("#d35199ff", "#52c2e8ff", "#f4e01dff"),
-                        name = "Emission\nscenario") +
-      ggtitle(t)
-  }
+                        name = "Emission\nscenario") 
+    
+    return(gg)
+    
+    }
   
-  gg <- ggpubr::ggarrange(plotlist = fig_list, 
-                          nrow = 1, ncol = length(fig_list), 
-                          common.legend = T)
+  # gg <- ggpubr::ggarrange(plotlist = fig_list, 
+  #                         nrow = 1, ncol = length(fig_list), 
+  #                         common.legend = T)
   
-  return(gg)
   
-}
+  
+#}
     
   
     
