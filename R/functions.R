@@ -170,7 +170,7 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
   r <- app(pred_ras, fun)
   
   g <- ggplot() +
-    geom_sf(data = coast, aes(fill = surface), show.legend = F) +
+    geom_sf(data = coast, aes(fill = surface), color = "lightgrey", show.legend = F) +
     scale_fill_manual(values = c("#f4f3ef", "grey", "grey", "grey"),
                       breaks = c("land", "ice shelf", "ice tongue", "rumple")) +
     ggnewscale::new_scale("fill") +
