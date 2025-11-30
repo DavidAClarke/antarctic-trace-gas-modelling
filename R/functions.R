@@ -169,6 +169,8 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
     
   r <- app(pred_ras, fun)
   
+  #v <- values(r, na.rm = T)
+  
   g <- ggplot() +
     geom_sf(data = coast, aes(fill = surface), color = "lightgrey", show.legend = F) +
     scale_fill_manual(values = c("#f4f3ef", "grey", "grey", "grey"),
@@ -188,14 +190,19 @@ pred_maps <- function(pred_ras, comb = T, fun = mean, gas, sve = F, fname = NULL
   
   if(gas == "H2"){
     g <- g + scale_fill_whitebox_c(palette = "muted", 
-                                   name = expression(nmol ~ H[2] ~ hr^{-1} ~ g^{-1}),
-                                   labels = scales::label_number())
+                                   name = expression(nmol ~ H[2] ~ h^{-1} ~ g^{-1}),
+                                   labels = c("5.56e-05", "0.2", "0.4", "0.6"),
+                                   breaks = c(0.00006,
+                                              0.2,0.4,0.6))
   } else
     
     if(gas == "CO"){
       g <- g + scale_fill_whitebox_c(palette = "muted", 
-                                     name = expression(nmol ~ CO ~ hr^{-1} ~ g^{-1}),
-                                     labels = scales::label_number())
+                                     name = expression(nmol ~ CO ~ h^{-1} ~ g^{-1}),
+                                     #labels = c("1.34e-12", "0.0005", "0.0010", "0.0015"),
+                                     labels = scales::label_scientific(),
+                                     breaks = c(0.00000000001, 0.0005, 0.0010, 0.0015)
+                                    ) 
     }
   
   if(sve == T){
