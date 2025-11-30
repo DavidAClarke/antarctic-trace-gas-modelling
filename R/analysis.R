@@ -93,6 +93,15 @@ exp(confint(h2m))
 h2_cv <- cv::cv(h2m, reps = 1, k = "loo")
 #plot(h2_cv)
 
+# Assess goodness of fit
+h2mnull <- update(h2m, . ~ 1)
+pchisq(2 * (logLik(h2m) - logLik(h2mnull)), df = 3, lower.tail = FALSE)
+
+#This model fits the data significantly better than the null model, i.e., 
+#the intercept-only model. To show that this is the case, we can compare with 
+#the current model to a null model without predictors using chi-squared test on
+# the difference of log likelihoods.
+
 # Plot model
 h2m_plot <- model_pred(gas_data[["H2"]], "H2", h2m)
 
@@ -126,6 +135,10 @@ com <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"),
 summary(com)
 exp(confint(com))
 co_cv <- cv::cv(com, reps = 1, k = "loo")
+
+# Assess goodness of fit
+commnull <- update(com, . ~ 1)
+pchisq(2 * (logLik(com) - logLik(commnull)), df = 3, lower.tail = FALSE)
 
 # Plot model
 com_plot <-model_pred(gas_data[["CO"]], "CO", com)
@@ -161,6 +174,10 @@ ch4m <- glmmTMB(value ~ poly(temp,2), family = ziGamma(link = "log"),
 summary(ch4m)
 exp(confint(ch4m))
 cv::cv(ch4m, reps = 1, k = "loo")
+
+# Assess goodness of fit
+ch4mnull <- update(ch4m, . ~ 1)
+pchisq(2 * (logLik(ch4m) - logLik(ch4mnull)), df = 3, lower.tail = FALSE)
 
 # Plot model
 ch4m_plot <- model_pred(gas_data[["CH4"]], "CH4", ch4m)
@@ -284,6 +301,10 @@ for(i in seq_along(gas_preds)){
 h2_r <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr.tif"))
 co_r <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
 
+## Use coarser resolution data for maps
+h2_rc <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr_crs.tif"))
+co_rc <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr_crs.tif"))
+
 h2_map <- pred_maps(h2_r, comb = T, fun = median, gas = "H2", 
                     ret = T, sve = F, fname = "H2_1981-2010")
 co_map <- pred_maps(co_r, comb = T, fun = median, gas = "CO", 
@@ -314,8 +335,8 @@ h2_box <- ggplot(df, aes(x = median, y = reorder(acbr, median))) +
   theme_bw() +
   theme(panel.grid = element_blank(),
         axis.title = element_text(size = 16),
-        axis.text = element_text(size = 14)) +
-  xlab(expression(Rate ~ (nmol ~ H[2] ~ hr^{-1} ~ g^{-1}))) +
+        axis.text = element_text(size = 12)) +
+  xlab(expression(Rate ~ (nmol ~ H[2] ~ h^{-1} ~ g^{-1}))) +
   ylab("ACBR") 
 
 ## Carbon monoxide
@@ -342,9 +363,10 @@ co_box <- ggplot(df, aes(x = median, y = reorder(acbr, median))) +
   theme_bw() +
   theme(panel.grid = element_blank(),
         axis.title = element_text(size = 16),
-        axis.text = element_text(size = 14)) +
-  xlab(expression(Rate ~ (nmol ~ CO ~ hr^{-1} ~ g^{-1}))) +
-  ylab("ACBR") 
+        axis.text = element_text(size = 12)) +
+  xlab(expression(Rate ~ (nmol ~ CO ~ h^{-1} ~ g^{-1}))) +
+  ylab("ACBR") +
+  scale_x_continuous(labels = scales::label_scientific())
 
 ggpubr::ggarrange(h2_map, co_map, 
                   h2_box, co_box, 
