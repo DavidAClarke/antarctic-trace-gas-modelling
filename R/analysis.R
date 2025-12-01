@@ -305,9 +305,9 @@ co_r <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr.tif"))
 h2_rc <- rast(here(dirname(here()), "data", "H2_1981-2010_ant_acbr_crs.tif"))
 co_rc <- rast(here(dirname(here()), "data", "CO_1981-2010_ant_acbr_crs.tif"))
 
-h2_map <- pred_maps(h2_r, comb = T, fun = median, gas = "H2", 
+h2_map <- pred_maps(h2_rc, comb = T, fun = median, gas = "H2", 
                     ret = T, sve = F, fname = "H2_1981-2010")
-co_map <- pred_maps(co_r, comb = T, fun = median, gas = "CO", 
+co_map <- pred_maps(co_rc, comb = T, fun = median, gas = "CO", 
                     ret = T, sve = F, fname = "CO_1981-2010")
 
 ## ACBR boxplots
