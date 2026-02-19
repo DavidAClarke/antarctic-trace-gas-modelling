@@ -1,5 +1,6 @@
 # Antarctic trace gas modelling
-Modelling and predicting rates of Antarctic trace gas oxidation across space (i.e., across the Antarctic ice-free areas). This repository is associated with the following publication: 
+Modelling and predicting rates of Antarctic trace gas oxidation across space (i.e., across the Antarctic ice-free areas).
+
 Tess F Hutchinson, S Ry Holland, David A Clarke, Francesco Ricci, Thanavit Jirapanjawat, Pok Man Leung, Rachael Lappan, W P Amy Liu, Sean K Bay, Aimee Bliss, Melodie A McGeoch, Steven L Chown, Chris Greening, Resilient Antarctic soil bacteria consume trace gases across wide temperature ranges, The ISME Journal, 2026;, wrag020, https://doi.org/10.1093/ismejo/wrag020
 
 ## Climate data
