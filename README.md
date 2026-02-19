@@ -1,7 +1,7 @@
 # Antarctic trace gas modelling
 Modelling and predicting rates of Antarctic trace gas oxidation across space (i.e., across the Antarctic ice-free areas).
 
-Tess F Hutchinson, S Ry Holland, David A Clarke, Francesco Ricci, Thanavit Jirapanjawat, Pok Man Leung, Rachael Lappan, W P Amy Liu, Sean K Bay, Aimee Bliss, Melodie A McGeoch, Steven L Chown, Chris Greening, Resilient Antarctic soil bacteria consume trace gases across wide temperature ranges, The ISME Journal, 2026;, wrag020, https://doi.org/10.1093/ismejo/wrag020
+Hutchinson, T. F., Holland, S. R., Clarke, D. A., Ricci, F., Jirapanjawat, T., Leung, P. M., ... & Greening, C. (2026). Resilient Antarctic soil bacteria consume trace gases across wide temperature ranges. The ISME Journal, wrag020.
 
 ## Climate data
 Temperature (tas) data for use in the spatial predictions was obtained from [CHELSA v2.1](https://chelsa-climate.org/downloads/). There are four time periods (1981-2010, 2011-2040, 2041-2070, 2071-2100), where all but the first (current climate) are associated with outputs from five global climate models (GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-HR, MRI-ESM2-0, UKESM1-0-LL) and three emmissions scenarios (ssp126, ssp370, ssp585). Specifically, after following the above link and choosing v2.1, proceed as follows: _GLOBAL > climatologies > [time period] > [model] > [scenario] > tas_. Note that 1981-2010 does not have models or scenarios. Functions for reading and manipulating the temperature data require the following folder structure (though replace "model n" with the model name, e.g. GFDL-ESM4):
